@@ -31,3 +31,9 @@ def get_random_choice() -> Dict:
 def play(request_dto: ChoiceRequestDto) -> Dict:
     game_service = RPSSLGameEngine()
     return game_service.play(request_dto.choice)
+
+
+@router.post("/play_versus_opponent", status_code=status.HTTP_200_OK)
+def play(request_dto: ChoiceRequestDto) -> Dict:
+    game_service = RPSSLGameEngine()
+    return game_service.play(request_dto.choice)
