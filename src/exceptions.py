@@ -19,7 +19,25 @@ class APIError(HTTPException):
         self.headers = headers
 
 
+class BaseApplicationException(Exception):
+    message: str = None
+
+    def __init__(self, *args, **kwargs):
+        assert self.message is not None
+        super().__init__(self.message)
+
+
+@dataclass
+class InternalError(ErrorInstance):
+    status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail: str = "Something went wrong."
+
+
 @dataclass
 class InvalidChoice(ErrorInstance):
     status_code: int = status.HTTP_422_UNPROCESSABLE_ENTITY
     detail: str = "Invalid choice provided!"
+
+
+class RandomNumberRetrievalError(BaseApplicationException):
+    message: str = "Failure retrieving random number."
