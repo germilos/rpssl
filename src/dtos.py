@@ -11,11 +11,11 @@ class ChoiceRequestDto(BaseModel):
     choice: int
     username: Optional[str] = None
 
-    @field_validator("choice")
+    @field_validator("choice", mode="before")
     def validate_choice(cls, v: Optional[int]) -> int:
-        if v not in choices.keys():
-            raise APIError(error=InvalidChoice())
-        return v
+        if isinstance(v, int) and v in choices.keys():
+            return v
+        raise APIError(error=InvalidChoice())
 
 
 class CreateGameRequestDto(BaseModel):

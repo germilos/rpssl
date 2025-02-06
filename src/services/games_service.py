@@ -9,7 +9,7 @@ class GamesService:
     def __init__(self, games_storage: GamesStorage):
         self.games_storage = games_storage
 
-    def create_active_game(self, created_by: str, initial_choice: int):
+    def create_active_game(self, created_by: str, initial_choice: int) -> Dict:
         new_game = {
             "first_player": created_by,
             "first_player_choice": initial_choice,
@@ -25,9 +25,11 @@ class GamesService:
     def get_active_game_by_id(self, game_id: uuid.UUID) -> Optional[Dict]:
         return self.games_storage.get_active_game_by_id(game_id)
 
-    def get_random_active_game(self) -> Dict:
+    def get_random_active_game(self) -> Optional[Dict]:
         random_number = utils.generate_random_choice_id()
         active_games = self.get_active_games()
+        if len(active_games) <= 0:
+            return None
         random_game = active_games[random_number % len(active_games)]
         return random_game
 

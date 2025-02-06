@@ -1,5 +1,6 @@
 from typing import Dict
 
+from src.enums import COMPUTER
 from src.services.leaderboard_service import LeaderboardService
 from src.storage.user_info_storage import UserGameInfoStorage
 
@@ -24,4 +25,5 @@ class UserGameInfoService:
         winner_info = self.user_game_info_storage.add_user_win(winner, game)
         self.user_game_info_storage.add_user_loss(loser, game)
 
-        self.leaderboard_service.add_user_score(winner, winner_info["wins"])
+        if winner != COMPUTER:
+            self.leaderboard_service.add_user_score(winner, winner_info["wins"])

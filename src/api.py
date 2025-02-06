@@ -7,6 +7,7 @@ from src import utils
 from src.dtos import ChoiceRequestDto, CreateGameRequestDto, PlayGameRequestDto
 
 from src.enums import choices
+from src.exceptions import RandomNumberRetrievalError, APIError, InternalError
 from src.resolvers import (
     get_leaderboard_service,
     get_games_service,
@@ -34,8 +35,12 @@ def get_choices() -> List[Dict]:
 
 @router.get("/choice", status_code=status.HTTP_200_OK)
 def get_random_choice() -> Dict:
-    test = utils.generate_random_choice_id()
-    return {"id": test, "name": choices[test]}
+    try:
+        random_choice = utils.generate_random_choice_id()
+    except RandomNumberRetrievalError:
+        raise APIError(InternalError())
+
+    return {"id": random_choice, "name": choices[random_choice]}
 
 
 @router.post("/play", status_code=status.HTTP_200_OK)
@@ -53,7 +58,7 @@ def play_multiplayer(
 
 
 @router.get("/scoreboard", status_code=status.HTTP_200_OK)
-def scoreboard(
+def get_scoreboard(
     recent_games_service: RecentGamesService = Depends(get_recent_games_service),
 ) -> List:
     return recent_games_service.get_recent_games()
@@ -77,7 +82,7 @@ def get_leaderboard(
 def create_game(
     request_dto: CreateGameRequestDto,
     games_service: GamesService = Depends(get_games_service),
-):
+) -> Dict:
     return games_service.create_active_game(request_dto.username, request_dto.choice)
 
 

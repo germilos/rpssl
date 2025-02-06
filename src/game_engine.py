@@ -4,6 +4,7 @@ from typing import Optional
 
 from src import utils
 from src.enums import Choice, choices, GameResult, COMPUTER, ANONYMOUS
+from src.exceptions import ActiveGameNotFoundError, APIError
 from src.services.games_service import GamesService
 from src.services.scoreboard_service import RecentGamesService
 from src.services.user_info_service import UserGameInfoService
@@ -71,8 +72,8 @@ class RPSSLGameEngine(GameEngine):
             game = self.games_service.get_random_active_game()
         else:
             game = self.games_service.get_active_game_by_id(game_id)
-            if game is None:
-                raise Exception("Active game not found!")
+        if game is None:
+            raise APIError(ActiveGameNotFoundError())
 
         game["second_player"] = username
         game["second_player_choice"] = choice_id
@@ -87,7 +88,7 @@ class RPSSLGameEngine(GameEngine):
 
         self.recent_games_service.add_game(game)
         self.user_game_info_service.add_game(game)
-        self.games_service.complete_game(game["id"])
+        self.games_service.complete_game(game["game_id"])
 
         return {
             "results": self._resolve_outcome(winner, username),
@@ -111,11 +112,7 @@ class RPSSLGameEngine(GameEngine):
         else:
             return second_player
 
-    def _resolve_outcome(
-        self,
-        winner: str,
-        user: str,
-    ):
+    def _resolve_outcome(self, winner: str, user: str):
         if winner == user:
             return GameResult.WIN
         return GameResult.LOSS if winner != GameResult.TIE else GameResult.TIE

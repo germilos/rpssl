@@ -3,6 +3,8 @@ from typing import Optional, Dict, Any
 from fastapi import HTTPException
 from starlette import status
 
+from src.enums import choices
+
 
 @dataclass
 class ErrorInstance:
@@ -36,7 +38,23 @@ class InternalError(ErrorInstance):
 @dataclass
 class InvalidChoice(ErrorInstance):
     status_code: int = status.HTTP_422_UNPROCESSABLE_ENTITY
-    detail: str = "Invalid choice provided!"
+    detail: str = (
+        f"Invalid choice provided! "
+        f"Please provide one of the following options: "
+        f"{', '.join([str(c) for c in choices.keys()])}"
+    )
+
+
+@dataclass
+class ActiveGamesLimitError(ErrorInstance):
+    status_code: int = status.HTTP_422_UNPROCESSABLE_ENTITY
+    detail: str = "Active games limit reached."
+
+
+@dataclass
+class ActiveGameNotFoundError(ErrorInstance):
+    status_code: int = status.HTTP_422_UNPROCESSABLE_ENTITY
+    detail: str = "Active game not found."
 
 
 class RandomNumberRetrievalError(BaseApplicationException):

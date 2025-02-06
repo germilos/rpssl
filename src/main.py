@@ -9,7 +9,6 @@ from src import api
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # execute_migrations()
     yield
 
 
