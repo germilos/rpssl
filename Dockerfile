@@ -1,6 +1,6 @@
 FROM python:3.11-slim-bullseye AS compile-image
 
-ARG REQUIREMENTS_FILE=requirements/requirements.txt
+ARG REQUIREMENTS_FILE=requirements.txt
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	build-essential \
