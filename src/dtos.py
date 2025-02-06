@@ -33,12 +33,3 @@ class PlayGameRequestDto(BaseModel):
         if v not in choices.keys():
             raise APIError(error=InvalidChoice())
         return v
-
-
-class UserScore:
-    def __init__(self, user, score):
-        self.user = user
-        self.score = score
-
-    def __lt__(self, other):  # To override > operator
-        return self.score < other.score

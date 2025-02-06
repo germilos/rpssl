@@ -1,4 +1,5 @@
 import abc
+import logging
 import uuid
 from typing import Optional
 
@@ -39,12 +40,17 @@ class RPSSLGameEngine(GameEngine):
         }
 
     def single_player(self, player_choice_id: int, username: Optional[str] = None):
+        player_name = username if username is not None else ANONYMOUS
+
+        logging.info(
+            f"Player {username} attempts to play game against {COMPUTER}, "
+            f"choice: {player_choice_id}..."
+        )
         computer_choice_id = utils.generate_random_choice_id()
         computer_choice = choices[computer_choice_id]
 
         player_choice = choices[player_choice_id]
 
-        player_name = username if username is not None else ANONYMOUS
         winner = self._resolve_winner(
             username, COMPUTER, player_choice, computer_choice
         )
@@ -54,7 +60,10 @@ class RPSSLGameEngine(GameEngine):
             "second_player": COMPUTER,
             "second_player_choice": computer_choice,
             "winner": winner,
+            "game_id": uuid.uuid4(),
         }
+        logging.info(f"{winner} wins game: {str(game['game_id'])}!")
+
         self.recent_games_service.add_game(game)
         if player_name != ANONYMOUS:
             self.user_game_info_service.add_game(game)
@@ -69,10 +78,19 @@ class RPSSLGameEngine(GameEngine):
         self, username: str, choice_id: id, game_id: Optional[uuid.UUID] = None
     ):
         if game_id is None:
+            logging.info(
+                f"Player {username} attempts to play random game, "
+                f"choice: {choice_id}..."
+            )
             game = self.games_service.get_random_active_game()
         else:
+            logging.info(
+                f"Player {username} attempts to play game {game_id}, "
+                f"choice: {choice_id}..."
+            )
             game = self.games_service.get_active_game_by_id(game_id)
         if game is None:
+            logging.exception("Error retrieving active game.")
             raise APIError(ActiveGameNotFoundError())
 
         game["second_player"] = username
@@ -85,6 +103,7 @@ class RPSSLGameEngine(GameEngine):
             choices[game["second_player_choice"]],
         )
         game["winner"] = winner
+        logging.info(f"{winner} wins game: {game['game_id']}!")
 
         self.recent_games_service.add_game(game)
         self.user_game_info_service.add_game(game)

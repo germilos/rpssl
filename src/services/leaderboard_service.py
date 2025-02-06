@@ -3,7 +3,6 @@ import collections
 import heapq
 from typing import Dict, List
 
-from src.dtos import UserScore
 from src.settings import settings
 from src.singleton import Singleton
 
@@ -35,10 +34,15 @@ class InMemoryLeaderboardService(LeaderboardService):
         heap = []
         for user, score in self.store.get_leaderboard().items():
             if len(heap) < n:
-                heapq.heappush(heap, UserScore(user=user, score=score))
+                heapq.heappush(heap, (-score, user))
             else:
-                if score > heap[0]["score"]:
+                if score > heap[0][0]:
                     heapq.heappop(heap)
-                    heapq.heappush(heap, score)
+                    heapq.heappush(heap, (-score, user))
 
-        return heap
+        result = []
+        while len(heap) > 0:
+            item = heapq.heappop(heap)
+            result.append({"name": item[1], "score": item[0]})
+
+        return result
