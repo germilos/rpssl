@@ -14,7 +14,7 @@ from src.storage.games_storage import (
     InMemoryGameStore,
     InMemoryGamesStorage,
 )
-from src.storage.scoreboard_storage import (
+from src.storage.recent_games_storage import (
     InMemoryRecentGamesStorage,
     RecentGamesStorage,
     InMemoryRecentGamesStore,

@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from src.singleton import Singleton
-from src.storage.scoreboard_storage import RecentGamesStorage
+from src.storage.recent_games_storage import RecentGamesStorage
 
 
 class RecentGamesService(metaclass=Singleton):
