@@ -45,7 +45,7 @@ def get_random_choice() -> Dict:
 
 @router.post("/play", status_code=status.HTTP_200_OK)
 def play(request_dto: ChoiceRequestDto, game_engine=Depends(get_game_engine)) -> Dict:
-    return game_engine.single_player(request_dto.choice, request_dto.username)
+    return game_engine.single_player(request_dto.player, request_dto.username)
 
 
 @router.post("/multiplayer", status_code=status.HTTP_200_OK)

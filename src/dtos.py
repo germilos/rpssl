@@ -8,10 +8,10 @@ from src.exceptions import APIError, InvalidChoice
 
 
 class ChoiceRequestDto(BaseModel):
-    choice: int
+    player: int
     username: Optional[str] = None
 
-    @field_validator("choice", mode="before")
+    @field_validator("player", mode="before")
     def validate_choice(cls, v: Optional[int]) -> int:
         if isinstance(v, int) and v in choices.keys():
             return v
