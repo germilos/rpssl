@@ -1,32 +1,34 @@
 import abc
+import uuid
 from typing import Optional
 
 from src import utils
-from src.choices import Choice, choices
+from src.enums import Choice, choices, GameResult, COMPUTER, ANONYMOUS
 from src.services.games_service import GamesService
-from src.services.leaderboard_service import InMemoryLeaderboardService, InMemoryLeaderboardStore
-from src.services.scoreboard_service import ScoreboardService
+from src.services.scoreboard_service import RecentGamesService
 from src.services.user_info_service import UserGameInfoService
-from src.storage.games_storage import InMemoryGamesStorage, InMemoryGameStore
-from src.storage.scoreboard_storage import InMemoryScoreboardStorage, InMemoryScoreboardStore
-from src.storage.user_info_storage import InMemoryUserGameInfoStorage, InMemoryUserGameInfoStore
-
-rules = {
-    Choice.ROCK: {Choice.LIZARD, Choice.SCISSORS},
-    Choice.PAPER: {Choice.ROCK, Choice.SPOCK},
-    Choice.SCISSORS: {Choice.PAPER, Choice.LIZARD},
-    Choice.LIZARD: {Choice.SPOCK, Choice.PAPER},
-    Choice.SPOCK: {Choice.SCISSORS, Choice.ROCK},
-}
 
 
 class GameEngine(abc.ABC):
-    def play(self, choice: Choice):
+    def single_player(self, player_choice_id: int, username: Optional[str] = None):
+        raise NotImplementedError
+
+    def multiplayer(
+        self, username: str, choice_id: id, game_id: Optional[uuid.UUID] = None
+    ):
         raise NotImplementedError
 
 
 class RPSSLGameEngine(GameEngine):
-    def __init__(self):
+    def __init__(
+        self,
+        games_service: GamesService,
+        recent_games_service: RecentGamesService,
+        user_game_info_service: UserGameInfoService,
+    ):
+        self.games_service = games_service
+        self.recent_games_service = recent_games_service
+        self.user_game_info_service = user_game_info_service
         self.rules = {
             Choice.ROCK: {Choice.LIZARD, Choice.SCISSORS},
             Choice.PAPER: {Choice.ROCK, Choice.SPOCK},
@@ -35,87 +37,85 @@ class RPSSLGameEngine(GameEngine):
             Choice.SPOCK: {Choice.SCISSORS, Choice.ROCK},
         }
 
-    def play(self, choice: int, username: Optional[str]=None):
-        scoreboard = ScoreboardService(InMemoryScoreboardStorage(InMemoryScoreboardStore()))
+    def single_player(self, player_choice_id: int, username: Optional[str] = None):
+        computer_choice_id = utils.generate_random_choice_id()
+        computer_choice = choices[computer_choice_id]
 
-        computer_choice = utils.fetch_random_number()
-        computer_choice_value = choices[computer_choice]
-        choice_value = choices[choice]
-        choice_beats = rules[choice_value]
-        if computer_choice == choice:
-            ret_res = "tie"
-            result = {
-                "first_player": username if username is not None else "Anonymous",
-                "first_player_choice": choice,
-                "second_player": "Computer",
-                "second_player_choice": computer_choice,
-                "winner": "Tie"
-            }
-        elif computer_choice_value in choice_beats:
-            ret_res = "win"
-            result = {
-                "first_player": username if username is not None else "Anonymous",
-                "first_player_choice": choice,
-                "second_player": "Computer",
-                "second_player_choice": computer_choice,
-                "winner": username if username is not None else "Anonymous"
-            }
-        else:
-            ret_res = "loss"
-            result = {
-                "first_player": username if username is not None else "Anonymous",
-                "first_player_choice": choice,
-                "second_player": "Computer",
-                "second_player_choice": computer_choice,
-                "winner": "Computer"
-            }
-        scoreboard.add_game_score(result)
-        return {"results": ret_res, "player": choice, "computer": computer_choice}
+        player_choice = choices[player_choice_id]
 
-    def get_active_games(self):
-        game_service = GamesService(InMemoryGamesStorage(InMemoryGameStore()))
-        return game_service.get_active_games()
+        player_name = username if username is not None else ANONYMOUS
+        winner = self._resolve_winner(
+            username, COMPUTER, player_choice, computer_choice
+        )
+        game = {
+            "first_player": player_name,
+            "first_player_choice": player_choice,
+            "second_player": COMPUTER,
+            "second_player_choice": computer_choice,
+            "winner": winner,
+        }
+        self.recent_games_service.add_game(game)
+        if player_name != ANONYMOUS:
+            self.user_game_info_service.add_game(game)
 
-    def start_new_game(self, username, choice):
-        games_service = GamesService(InMemoryGamesStorage(InMemoryGameStore()))
-        game_id = games_service.create_active_game(username, choice)
-        return game_id
+        return {
+            "results": self._resolve_outcome(winner, username),
+            "player": player_choice_id,
+            "computer": computer_choice_id,
+        }
 
-    def play_multiplayer(self, username, choice, game_id=None):
-        games_service = GamesService(InMemoryGamesStorage(InMemoryGameStore()))
-        scoreboard = ScoreboardService(InMemoryScoreboardStorage(InMemoryScoreboardStore()))
-        user_scores_service = UserGameInfoService(user_game_info_storage=InMemoryUserGameInfoStorage(InMemoryUserGameInfoStore())
-                                                  , leaderboard_service=InMemoryLeaderboardService(InMemoryLeaderboardStore()))
+    def multiplayer(
+        self, username: str, choice_id: id, game_id: Optional[uuid.UUID] = None
+    ):
         if game_id is None:
-            random_game = games_service.get_random_active_game()
+            game = self.games_service.get_random_active_game()
+        else:
+            game = self.games_service.get_active_game_by_id(game_id)
+            if game is None:
+                raise Exception("Active game not found!")
 
-            print(random_game)
-            random_game["second_player"] = username
-            random_game["second_player_choice"] = choice
+        game["second_player"] = username
+        game["second_player_choice"] = choice_id
 
-            choice_value = choices[random_game["first_player_choice"]]
-            choice_beats = rules[choice_value]
-            if random_game["second_player_choice"] == random_game["first_player_choice"]:
-                random_game["winner"] = "Tie"
-            elif random_game["second_player_choice"] in choice_beats:
-                random_game["winner"] = random_game["first_player"]
-            else:
-                random_game["winner"] = random_game["second_player"]
-            scoreboard.add_game_score(random_game)
-            user_scores_service.add_game(random_game)
-            games_service.complete_game(random_game["id"])
-            return random_game
+        winner = self._resolve_winner(
+            game["first_player"],
+            game["second_player"],
+            choices[game["first_player_choice"]],
+            choices[game["second_player_choice"]],
+        )
+        game["winner"] = winner
 
-        # if game_id not in active_games:
-        #     if game_id in games:
-        #         raise Exception("Game already finished!")  # Return game info
-        #     raise Exception("Game doesn't exist!")
+        self.recent_games_service.add_game(game)
+        self.user_game_info_service.add_game(game)
+        self.games_service.complete_game(game["id"])
 
-        # active_game = active_games[game_id]
-        # active_game["second_player"] = username
-        # active_game["second_player_choice"] = choice
+        return {
+            "results": self._resolve_outcome(winner, username),
+            game["second_player"]: game["second_player_choice"],
+            game["first_player"]: game["first_player_choice"],
+        }
 
-    def _resolve_winner(self, game):
-        raise NotImplementedError
+    def _resolve_winner(
+        self,
+        first_player: str,
+        second_player: str,
+        first_player_choice: Choice,
+        second_player_choice: Choice,
+    ):
+        choice_beats = self.rules[first_player_choice]
 
+        if first_player_choice == second_player_choice:
+            return GameResult.TIE
+        elif second_player_choice in choice_beats:
+            return first_player
+        else:
+            return second_player
 
+    def _resolve_outcome(
+        self,
+        winner: str,
+        user: str,
+    ):
+        if winner == user:
+            return GameResult.WIN
+        return GameResult.LOSS if winner != GameResult.TIE else GameResult.TIE

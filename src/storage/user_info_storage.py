@@ -7,7 +7,9 @@ from src.singleton import Singleton
 
 class InMemoryUserGameInfoStore(metaclass=Singleton):
     def __init__(self):
-        self._user_info = collections.defaultdict(lambda: {"games": [], "wins": 0, "losses": 0, "ratio": 0})
+        self._user_info = collections.defaultdict(
+            lambda: {"games": [], "wins": 0, "losses": 0, "ratio": 0}
+        )
 
     def get_user_info(self):
         return self._user_info

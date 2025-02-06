@@ -1,6 +1,7 @@
 import abc
 import uuid
-from typing import Dict, List
+from collections import defaultdict
+from typing import Dict, List, Optional
 from uuid import uuid4
 
 from src.settings import settings
@@ -10,8 +11,8 @@ from src.singleton import Singleton
 class InMemoryGameStore(metaclass=Singleton):
     def __init__(self):
         self._capacity = settings.MAX_ACTIVE_GAMES
-        self._active_games = {}
-        self._completed_games = {}
+        self._active_games = defaultdict(None)
+        self._completed_games = defaultdict(None)
 
     def get_active_games(self) -> Dict:
         return self._active_games
@@ -51,13 +52,13 @@ class InMemoryGamesStorage(GamesStorage):
         if len(self.store.get_active_games()) == self.store.get_capacity():
             raise Exception("Games full!")
 
-        new_game_id = str(uuid4()),
+        new_game_id = (str(uuid4()),)
         new_game["id"] = new_game_id[0]
         self.store.get_active_games()[new_game_id[0]] = new_game
 
         return new_game_id
 
-    def get_active_game_by_id(self, game_id: uuid.UUID) -> Dict:
+    def get_active_game_by_id(self, game_id: uuid.UUID) -> Optional[Dict]:
         return self.store.get_active_games()[game_id]
 
     def get_active_games(self):

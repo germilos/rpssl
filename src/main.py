@@ -4,8 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src import api, utils
-from src.utils import fetch_random_number
+from src import api
 
 
 @asynccontextmanager

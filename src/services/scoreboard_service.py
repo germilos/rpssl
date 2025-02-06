@@ -1,18 +1,18 @@
 from typing import Dict, List
 
 from src.singleton import Singleton
-from src.storage.scoreboard_storage import ScoreboardStorage
+from src.storage.scoreboard_storage import RecentGamesStorage
 
 
-class ScoreboardService(metaclass=Singleton):
-    def __init__(self, scoreboard_storage: ScoreboardStorage):
-        self.scoreboard_storage = scoreboard_storage
+class RecentGamesService(metaclass=Singleton):
+    def __init__(self, recent_games_storage: RecentGamesStorage):
+        self.recent_games_storage = recent_games_storage
 
-    def add_game_score(self, game: Dict):
-        self.scoreboard_storage.add(game)
+    def add_game(self, game: Dict):
+        self.recent_games_storage.add(game)
 
-    def reset_game_scores(self):
-        self.scoreboard_storage.clear()
+    def reset_recent_games(self):
+        self.recent_games_storage.clear()
 
-    def get_scoreboard(self) -> List[Dict]:
-        return self.scoreboard_storage.get_all()
+    def get_recent_games(self) -> List[Dict]:
+        return self.recent_games_storage.get_all()

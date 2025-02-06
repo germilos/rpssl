@@ -6,19 +6,19 @@ from src.settings import settings
 from src.singleton import Singleton
 
 
-class InMemoryScoreboardStore(metaclass=Singleton):
+class InMemoryRecentGamesStore(metaclass=Singleton):
     def __init__(self):
-        self._capacity = settings.SCOREBOARD_STORAGE_MAX_LENGTH
-        self._scoreboard = collections.deque(maxlen=self._capacity)
+        self._capacity = settings.MAX_RECENT_GAMES
+        self._games = collections.deque(maxlen=self._capacity)
 
-    def get_scoreboard(self) -> collections.deque:
-        return self._scoreboard
+    def get_games(self) -> collections.deque:
+        return self._games
 
     def get_capacity(self) -> int:
         return self._capacity
 
 
-class ScoreboardStorage(abc.ABC):
+class RecentGamesStorage(abc.ABC):
     def add(self, game: Dict) -> Dict:
         raise NotImplementedError
 
@@ -29,17 +29,17 @@ class ScoreboardStorage(abc.ABC):
         raise NotImplementedError
 
 
-class InMemoryScoreboardStorage(ScoreboardStorage):
-    def __init__(self, store: InMemoryScoreboardStore):
+class InMemoryRecentGamesStorage(RecentGamesStorage):
+    def __init__(self, store: InMemoryRecentGamesStore):
         self.store = store
 
     def add(self, game: Dict):
-        if len(self.store.get_scoreboard()) == self.store.get_capacity():
-            self.store.get_scoreboard().popleft()
-        self.store.get_scoreboard().append(game)
+        if len(self.store.get_games()) == self.store.get_capacity():
+            self.store.get_games().popleft()
+        self.store.get_games().append(game)
 
     def clear(self):
-        self.store.get_scoreboard().clear()
+        self.store.get_games().clear()
 
     def get_all(self) -> List[Dict]:
-        return list(self.store.get_scoreboard())[::-1]
+        return list(self.store.get_games())[::-1]

@@ -1,12 +1,12 @@
 import requests
 import logging
 
-from src.choices import choices
+from src.enums import choices
 from src.exceptions import RandomNumberRetrievalError
 from src.settings import settings
 
 
-def fetch_random_number():
+def generate_random_choice_id():
     retries = 0
     while retries < settings.RANDOM_NUMBER_RETRIEVAL_ATTEMPTS:
         try:

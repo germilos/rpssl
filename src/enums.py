@@ -1,6 +1,16 @@
 from enum import Enum
 
 
+COMPUTER = "Computer"
+ANONYMOUS = "Anonymous"
+
+
+class GameResult(str, Enum):
+    TIE = "Tie"
+    WIN = "Win"
+    LOSS = "Loss"
+
+
 class Choice(str, Enum):
     ROCK = "Rock"
     PAPER = "Paper"

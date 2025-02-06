@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import field_validator, BaseModel
 
-from src.choices import choices
+from src.enums import choices
 from src.exceptions import APIError, InvalidChoice
 
 
@@ -28,6 +28,12 @@ class PlayGameRequestDto(BaseModel):
     choice: int
     game_id: Optional[uuid.UUID] = None
 
+    @field_validator("choice")
+    def validate_choice(cls, v: Optional[int]) -> int:
+        if v not in choices.keys():
+            raise APIError(error=InvalidChoice())
+        return v
+
 
 class UserScore:
     def __init__(self, user, score):
@@ -36,9 +42,3 @@ class UserScore:
 
     def __lt__(self, other):  # To override > operator
         return self.score < other.score
-
-    def __gt__(self, other):  # To override < operator
-        return self.score > other.score
-
-    def get_score(self):
-        return self.score

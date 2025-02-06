@@ -5,13 +5,21 @@ from src.storage.user_info_storage import UserGameInfoStorage
 
 
 class UserGameInfoService:
-    def __init__(self, user_game_info_storage: UserGameInfoStorage, leaderboard_service: LeaderboardService):
+    def __init__(
+        self,
+        user_game_info_storage: UserGameInfoStorage,
+        leaderboard_service: LeaderboardService,
+    ):
         self.leaderboard_service = leaderboard_service
         self.user_game_info_storage = user_game_info_storage
 
     def add_game(self, game: Dict):
         winner = game["winner"]
-        loser = game["first_player"] if game["first_player"] != game["winner"] else game["second_player"]
+        loser = (
+            game["first_player"]
+            if game["first_player"] != game["winner"]
+            else game["second_player"]
+        )
 
         winner_info = self.user_game_info_storage.add_user_win(winner, game)
         self.user_game_info_storage.add_user_loss(loser, game)

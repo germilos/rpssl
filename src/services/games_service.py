@@ -1,5 +1,5 @@
 import uuid
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from src import utils
 from src.storage.games_storage import GamesStorage
@@ -15,15 +15,18 @@ class GamesService:
             "first_player_choice": initial_choice,
             "second_player": None,
             "second_player_choice": None,
-            "winner": None
+            "winner": None,
         }
         return self.games_storage.create_active_game(new_game)
 
     def get_active_games(self) -> List[Dict]:
         return self.games_storage.get_active_games()
 
+    def get_active_game_by_id(self, game_id: uuid.UUID) -> Optional[Dict]:
+        return self.games_storage.get_active_game_by_id(game_id)
+
     def get_random_active_game(self) -> Dict:
-        random_number = utils.fetch_random_number()
+        random_number = utils.generate_random_choice_id()
         active_games = self.get_active_games()
         random_game = active_games[random_number % len(active_games)]
         return random_game
