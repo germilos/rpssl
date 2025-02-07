@@ -22,6 +22,17 @@ class GamesService:
     def get_active_games(self) -> List[Dict]:
         return self.games_storage.get_active_games()
 
+    def get_active_games_skinny(self) -> List[Dict]:
+        return [
+            {
+                "game_id": game["game_id"],
+                "first_player": game["first_player"],
+                "second_player": game["second_player"],
+                "winner": game["winner"],
+            }
+            for game in self.games_storage.get_active_games()
+        ]
+
     def get_active_game_by_id(self, game_id: uuid.UUID) -> Optional[Dict]:
         return self.games_storage.get_active_game_by_id(game_id)
 

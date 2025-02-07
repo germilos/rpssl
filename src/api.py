@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from fastapi import APIRouter, Depends
 from starlette import status
@@ -87,11 +87,5 @@ def create_game(
 
 
 @router.get("/games", status_code=status.HTTP_200_OK)
-def get_games(
-    active: Optional[bool] = True,
-    games_service: GamesService = Depends(get_games_service),
-):
-    if active:
-        return games_service.get_active_games()
-    else:
-        return games_service.get_completed_games()
+def get_games(games_service: GamesService = Depends(get_games_service)):
+    return games_service.get_active_games_skinny()
