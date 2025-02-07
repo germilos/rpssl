@@ -7,8 +7,8 @@ from src.services.leaderboard_service import (
     LeaderboardService,
     InMemoryLeaderboardService,
 )
-from src.services.scoreboard_service import RecentGamesService
-from src.services.user_info_service import UserGameInfoService
+from src.services.recent_games_service import RecentGamesService
+from src.services.user_game_info_service import UserGameInfoService
 from src.storage.games_storage import (
     GamesStorage,
     InMemoryGameStore,

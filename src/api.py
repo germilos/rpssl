@@ -18,7 +18,7 @@ from src.services.games_service import GamesService
 from src.services.leaderboard_service import (
     LeaderboardService,
 )
-from src.services.scoreboard_service import RecentGamesService
+from src.services.recent_games_service import RecentGamesService
 
 router = APIRouter()
 

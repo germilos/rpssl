@@ -7,8 +7,8 @@ from src import utils
 from src.enums import Choice, choices, GameResult, COMPUTER, ANONYMOUS
 from src.exceptions import ActiveGameNotFoundError, APIError
 from src.services.games_service import GamesService
-from src.services.scoreboard_service import RecentGamesService
-from src.services.user_info_service import UserGameInfoService
+from src.services.recent_games_service import RecentGamesService
+from src.services.user_game_info_service import UserGameInfoService
 
 
 class GameEngine(abc.ABC):
