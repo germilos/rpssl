@@ -30,6 +30,14 @@ class InMemoryLeaderboardService(LeaderboardService):
     def add_user_score(self, user: str, score: int):
         self.store.get_leaderboard()[user] = score
 
+    """
+    Top K users by score leaderboard algorithm.
+
+    The algorithm utilizes a min-heap and removes minimum element
+    once a user with a larger score is found.
+    The result is then reversed in order to get descending values.
+    """
+
     def get_top_players(self, n=settings.LEADERBOARD_PLAYERS):
         heap = []
         for user, score in self.store.get_leaderboard().items():
