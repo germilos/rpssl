@@ -2,11 +2,11 @@ import abc
 import uuid
 from collections import defaultdict
 from typing import Dict, List, Optional
-from uuid import uuid4
 
 from src.exceptions import ActiveGamesLimitError, APIError
 from src.settings import settings
 from src.singleton import Singleton
+from src.utils import generate_uuid
 
 
 class InMemoryGameStore(metaclass=Singleton):
@@ -53,7 +53,7 @@ class InMemoryGamesStorage(GamesStorage):
         if len(self.store.get_active_games()) == self.store.get_capacity():
             raise APIError(ActiveGamesLimitError())
 
-        new_game_id = uuid4()
+        new_game_id = generate_uuid()
         new_game["game_id"] = new_game_id
         self.store.get_active_games()[new_game_id] = new_game
 

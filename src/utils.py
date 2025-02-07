@@ -1,3 +1,5 @@
+import uuid
+
 import requests
 import logging
 
@@ -23,3 +25,7 @@ def generate_random_choice_id():
                 f" {retries_left} retries left"
             )
     raise RandomNumberRetrievalError
+
+
+def generate_uuid() -> uuid.UUID:
+    return uuid.uuid4()
