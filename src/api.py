@@ -53,7 +53,7 @@ def play_multiplayer(
     request_dto: PlayGameRequestDto, game_engine=Depends(get_game_engine)
 ):
     return game_engine.multiplayer(
-        request_dto.username, request_dto.choice, request_dto.game_id
+        request_dto.choice, request_dto.username, request_dto.game_id
     )
 
 

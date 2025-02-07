@@ -16,7 +16,7 @@ class GameEngine(abc.ABC):
         raise NotImplementedError
 
     def multiplayer(
-        self, username: str, choice_id: id, game_id: Optional[uuid.UUID] = None
+        self, player_choice_id: id, username: str, game_id: Optional[uuid.UUID] = None
     ):
         raise NotImplementedError
 
@@ -75,18 +75,18 @@ class RPSSLGameEngine(GameEngine):
         }
 
     def multiplayer(
-        self, username: str, choice_id: id, game_id: Optional[uuid.UUID] = None
+        self, player_choice_id: id, username: str, game_id: Optional[uuid.UUID] = None
     ):
         if game_id is None:
             logging.info(
                 f"Player {username} attempts to play random game, "
-                f"choice: {choice_id}..."
+                f"choice: {player_choice_id}..."
             )
             game = self.games_service.get_random_active_game()
         else:
             logging.info(
                 f"Player {username} attempts to play game {game_id}, "
-                f"choice: {choice_id}..."
+                f"choice: {player_choice_id}..."
             )
             game = self.games_service.get_active_game_by_id(game_id)
         if game is None:
@@ -94,7 +94,7 @@ class RPSSLGameEngine(GameEngine):
             raise APIError(ActiveGameNotFoundError())
 
         game["second_player"] = username
-        game["second_player_choice"] = choice_id
+        game["second_player_choice"] = player_choice_id
 
         winner = self._resolve_winner(
             game["first_player"],
