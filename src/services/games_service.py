@@ -2,6 +2,7 @@ import uuid
 from typing import List, Dict, Optional
 
 from src import utils
+from src.dtos import GameDto, SkinnyGameDto
 from src.storage.games_storage import GamesStorage
 
 
@@ -9,7 +10,7 @@ class GamesService:
     def __init__(self, games_storage: GamesStorage):
         self.games_storage = games_storage
 
-    def create_active_game(self, created_by: str, initial_choice: int) -> Dict:
+    def create_active_game(self, created_by: str, initial_choice: int) -> GameDto:
         new_game = {
             "first_player": created_by,
             "first_player_choice": initial_choice,
@@ -17,19 +18,14 @@ class GamesService:
             "second_player_choice": None,
             "winner": None,
         }
-        return self.games_storage.create_active_game(new_game)
+        return GameDto.from_dict(self.games_storage.create_active_game(new_game))
 
     def get_active_games(self) -> List[Dict]:
         return self.games_storage.get_active_games()
 
-    def get_active_games_skinny(self) -> List[Dict]:
+    def get_active_games_skinny(self) -> List[SkinnyGameDto]:
         return [
-            {
-                "game_id": game["game_id"],
-                "first_player": game["first_player"],
-                "second_player": game["second_player"],
-                "winner": game["winner"],
-            }
+            SkinnyGameDto.from_dict(game)
             for game in self.games_storage.get_active_games()
         ]
 

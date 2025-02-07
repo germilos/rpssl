@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+from src.dtos import GameDto
 from src.singleton import Singleton
 from src.storage.recent_games_storage import RecentGamesStorage
 
@@ -14,5 +15,8 @@ class RecentGamesService(metaclass=Singleton):
     def reset_recent_games(self):
         self.recent_games_storage.clear()
 
-    def get_recent_games(self) -> List[Dict]:
-        return self.recent_games_storage.get_all()
+    def get_recent_games(self) -> List[GameDto]:
+        return [
+            GameDto.from_dict(game_dict)
+            for game_dict in self.recent_games_storage.get_all()
+        ]

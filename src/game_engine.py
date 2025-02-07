@@ -4,6 +4,7 @@ import uuid
 from typing import Optional
 
 from src import utils
+from src.dtos import SinglePlayerResultDto, MultiPlayerResultDto
 from src.enums import Choice, choices, GameResult, COMPUTER, ANONYMOUS
 from src.exceptions import ActiveGameNotFoundError, APIError
 from src.services.games_service import GamesService
@@ -12,12 +13,14 @@ from src.services.user_game_info_service import UserGameInfoService
 
 
 class GameEngine(abc.ABC):
-    def single_player(self, player_choice_id: int, username: Optional[str] = None):
+    def single_player(
+        self, player_choice_id: int, username: Optional[str] = None
+    ) -> SinglePlayerResultDto:
         raise NotImplementedError
 
     def multiplayer(
         self, player_choice_id: id, username: str, game_id: Optional[uuid.UUID] = None
-    ):
+    ) -> MultiPlayerResultDto:
         raise NotImplementedError
 
 
@@ -39,7 +42,9 @@ class RPSSLGameEngine(GameEngine):
             Choice.SPOCK: {Choice.SCISSORS, Choice.ROCK},
         }
 
-    def single_player(self, player_choice_id: int, username: Optional[str] = None):
+    def single_player(
+        self, player_choice_id: int, username: Optional[str] = None
+    ) -> SinglePlayerResultDto:
         player_name = username if username is not None else ANONYMOUS
 
         logging.info(
@@ -68,15 +73,15 @@ class RPSSLGameEngine(GameEngine):
         if player_name != ANONYMOUS:
             self.user_game_info_service.add_game(game)
 
-        return {
-            "results": self._resolve_outcome(winner, player_name),
-            "player": player_choice_id,
-            "computer": computer_choice_id,
-        }
+        return SinglePlayerResultDto(
+            results=self._resolve_outcome(winner, player_name),
+            player=player_choice_id,
+            computer=computer_choice_id,
+        )
 
     def multiplayer(
         self, player_choice_id: id, username: str, game_id: Optional[uuid.UUID] = None
-    ):
+    ) -> MultiPlayerResultDto:
         if game_id is None:
             logging.info(
                 f"Player {username} attempts to play random game, "
@@ -109,11 +114,13 @@ class RPSSLGameEngine(GameEngine):
         self.user_game_info_service.add_game(game)
         self.games_service.complete_game(game["game_id"])
 
-        return {
-            "results": self._resolve_outcome(winner, username),
-            game["second_player"]: game["second_player_choice"],
-            game["first_player"]: game["first_player_choice"],
-        }
+        return MultiPlayerResultDto(
+            results=self._resolve_outcome(winner, username),
+            first_player=game["first_player"],
+            first_player_choice=game["first_player_choice"],
+            second_player=game["second_player"],
+            second_player_choice=game["second_player_choice"],
+        )
 
     def _resolve_winner(
         self,
@@ -131,7 +138,7 @@ class RPSSLGameEngine(GameEngine):
         else:
             return second_player
 
-    def _resolve_outcome(self, winner: str, user: str):
+    def _resolve_outcome(self, winner: str, user: str) -> GameResult:
         if winner == user:
             return GameResult.WIN
         return GameResult.LOSS if winner != GameResult.TIE else GameResult.TIE

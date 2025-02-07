@@ -117,4 +117,5 @@ def test_play_multiplayer_random_game(
     resp_payload = resp.json()
 
     assert resp_payload["results"] == outcome
-    assert resp_payload[username] == second_player_choice
+    assert resp_payload["second_player"] == username
+    assert resp_payload["second_player_choice"] == second_player_choice

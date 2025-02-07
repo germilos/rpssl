@@ -157,8 +157,8 @@ def test_get_leaderboard(mocker, client: TestClient):
     assert resp.status_code == status.HTTP_200_OK
 
     assert len(resp_payload) == 5
-    assert resp_payload[0]["name"] == "Christy"
-    assert resp_payload[-1]["name"] == "Angela"
+    assert resp_payload[0]["user"] == "Christy"
+    assert resp_payload[-1]["user"] == "Angela"
 
 
 def test_get_leaderboard_top_10(mocker, client: TestClient):
@@ -189,8 +189,8 @@ def test_get_leaderboard_top_10(mocker, client: TestClient):
     assert resp.status_code == status.HTTP_200_OK
 
     assert len(resp_payload) == 10
-    assert resp_payload[0]["name"] == "Denis"
-    assert resp_payload[-1]["name"] == "Lara"
+    assert resp_payload[0]["user"] == "Denis"
+    assert resp_payload[-1]["user"] == "Lara"
 
 
 def test_get_leaderboard_empty(mocker, client: TestClient):

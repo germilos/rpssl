@@ -1,8 +1,9 @@
 import abc
 import collections
 import heapq
-from typing import Dict, List
+from typing import List
 
+from src.dtos import UserScoreDto
 from src.settings import settings
 from src.singleton import Singleton
 
@@ -19,7 +20,7 @@ class LeaderboardService(abc.ABC):
     def add_user_score(self, user: str, score: int):
         raise NotImplementedError
 
-    def get_top_players(self, n=settings.LEADERBOARD_PLAYERS) -> List[Dict]:
+    def get_top_players(self, n=settings.LEADERBOARD_PLAYERS) -> List[UserScoreDto]:
         raise NotImplementedError
 
 
@@ -38,7 +39,7 @@ class InMemoryLeaderboardService(LeaderboardService):
     The result is then reversed in order to get descending values.
     """
 
-    def get_top_players(self, n=settings.LEADERBOARD_PLAYERS):
+    def get_top_players(self, n=settings.LEADERBOARD_PLAYERS) -> List[UserScoreDto]:
         heap = []
         for user, score in self.store.get_leaderboard().items():
             if len(heap) < n:
@@ -51,6 +52,6 @@ class InMemoryLeaderboardService(LeaderboardService):
         result = []
         while len(heap) > 0:
             item = heapq.heappop(heap)
-            result.append({"name": item[1], "score": item[0]})
+            result.append(UserScoreDto(user=item[1], score=item[0]))
 
         return result[::-1]
