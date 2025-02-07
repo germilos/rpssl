@@ -69,7 +69,7 @@ class RPSSLGameEngine(GameEngine):
             self.user_game_info_service.add_game(game)
 
         return {
-            "results": self._resolve_outcome(winner, username),
+            "results": self._resolve_outcome(winner, player_name),
             "player": player_choice_id,
             "computer": computer_choice_id,
         }
