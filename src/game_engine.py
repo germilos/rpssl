@@ -52,7 +52,7 @@ class RPSSLGameEngine(GameEngine):
         player_choice = choices[player_choice_id]
 
         winner = self._resolve_winner(
-            username, COMPUTER, player_choice, computer_choice
+            player_name, COMPUTER, player_choice, computer_choice
         )
         game = {
             "first_player": player_name,
