@@ -16,6 +16,7 @@ There are 3 main use-cases:
 2. Multi-player game
 3. Scoreboard and leaderboard retrieval
 
+API can be accessed via the `/api/v1` prefix.
 
 Swagger documentation can be accessed via the usual `/docs` path.
 ## Use Cases
