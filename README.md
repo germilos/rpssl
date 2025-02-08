@@ -15,6 +15,9 @@ There are 3 main use-cases:
 1. Single player game
 2. Multi-player game
 3. Scoreboard and leaderboard retrieval
+
+
+Swagger documentation can be accessed via the usual `/docs` path.
 ## Use Cases
 ### Single player
 As per project requirements, the user is able to play against a computer opponent:
