@@ -14,6 +14,7 @@ from src.services.leaderboard_service import (
 )
 from src.services.recent_games_service import RecentGamesService
 from src.services.user_game_info_service import UserGameInfoService
+from src.settings import settings
 from src.storage.recent_games_storage import (
     InMemoryRecentGamesStorage,
     InMemoryRecentGamesStore,
@@ -25,7 +26,7 @@ from src.storage.user_info_storage import (
 
 logging.basicConfig(level=logging.INFO)
 
-PERSISTENCE_FILES_PREFIX = "persistence_files"
+PERSISTENCE_FILES_PREFIX = f"{settings.BASE_DIR}/src/persistence_files"
 RECENT_GAMES_FILE = "recent_games.pkl"
 LEADERBOARD_FILE = "leaderboard.pkl"
 USER_GAMES_FILE = "user_games.pkl"
