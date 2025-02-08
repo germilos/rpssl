@@ -6,9 +6,9 @@ ANONYMOUS = "Anonymous"
 
 
 class GameResult(str, Enum):
-    TIE = "Tie"
-    WIN = "Win"
-    LOSS = "Loss"
+    TIE = "tie"
+    WIN = "win"
+    LOSS = "lose"
 
 
 class Choice(str, Enum):
