@@ -5,7 +5,7 @@ import pytest
 from starlette import status
 from starlette.testclient import TestClient
 
-from src.enums import GameResult
+from src.enums import GameResult, choices
 
 
 @pytest.mark.parametrize(
@@ -78,7 +78,7 @@ def test_play_multiplayer_random_game(
     second_test_uuid = uuid.uuid4()
     first_game = {
         "first_player": "Peter",
-        "first_player_choice": first_player_choice,
+        "first_player_choice": choices[first_player_choice],
         "second_player": None,
         "second_player_choice": None,
         "winner": None,
@@ -86,7 +86,7 @@ def test_play_multiplayer_random_game(
     }
     second_game = {
         "first_player": "Tom",
-        "first_player_choice": first_player_choice,
+        "first_player_choice": choices[first_player_choice],
         "second_player": None,
         "second_player_choice": None,
         "winner": None,
@@ -118,4 +118,4 @@ def test_play_multiplayer_random_game(
 
     assert resp_payload["results"] == outcome
     assert resp_payload["second_player"] == username
-    assert resp_payload["second_player_choice"] == second_player_choice
+    assert resp_payload["second_player_choice"] == choices[second_player_choice]

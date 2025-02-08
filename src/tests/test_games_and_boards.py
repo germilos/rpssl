@@ -4,6 +4,8 @@ import uuid
 from starlette import status
 from starlette.testclient import TestClient
 
+from src.enums import choices, Choice
+
 
 def test_create_game(
     mocker,
@@ -39,7 +41,7 @@ def test_create_game(
     assert resp.status_code == status.HTTP_200_OK
 
     assert resp_payload["first_player"] == username
-    assert resp_payload["first_player_choice"] == choice
+    assert resp_payload["first_player_choice"] == choices[choice]
     assert resp_payload["game_id"] == str(test_uuid)
     assert resp_payload["second_player"] is None
     assert resp_payload["second_player_choice"] is None
@@ -100,17 +102,17 @@ def test_get_scoreboard(
     second_test_uuid = uuid.uuid4()
     first_game = {
         "first_player": "Peter",
-        "first_player_choice": 1,
+        "first_player_choice": Choice.ROCK,
         "second_player": "Stephen",
-        "second_player_choice": 2,
+        "second_player_choice": Choice.PAPER,
         "winner": "Peter",
         "game_id": first_test_uuid,
     }
     second_game = {
         "first_player": "Tom",
-        "first_player_choice": 1,
+        "first_player_choice": Choice.ROCK,
         "second_player": "Christy",
-        "second_player_choice": 3,
+        "second_player_choice": Choice.SCISSORS,
         "winner": "Christy",
         "game_id": second_test_uuid,
     }

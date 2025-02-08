@@ -49,17 +49,17 @@ class SinglePlayerResultDto(BaseModel):
 class MultiPlayerResultDto(BaseModel):
     results: GameResult
     first_player: str
-    first_player_choice: int
+    first_player_choice: Choice
     second_player: str
-    second_player_choice: int
+    second_player_choice: Choice
 
 
 class GameDto(BaseModel):
     game_id: uuid.UUID
     first_player: str
-    first_player_choice: int
+    first_player_choice: Choice
     second_player: Optional[str] = None
-    second_player_choice: Optional[int] = None
+    second_player_choice: Optional[Choice] = None
     winner: Optional[str] = None
 
     @staticmethod

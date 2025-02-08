@@ -3,6 +3,7 @@ from typing import List, Dict, Optional
 
 from src import utils
 from src.dtos import GameDto, SkinnyGameDto
+from src.enums import choices
 from src.storage.games_storage import GamesStorage
 
 
@@ -13,7 +14,7 @@ class GamesService:
     def create_active_game(self, created_by: str, initial_choice: int) -> GameDto:
         new_game = {
             "first_player": created_by,
-            "first_player_choice": initial_choice,
+            "first_player_choice": choices[initial_choice],
             "second_player": None,
             "second_player_choice": None,
             "winner": None,

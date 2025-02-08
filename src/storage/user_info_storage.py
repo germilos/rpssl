@@ -2,6 +2,7 @@ import abc
 import collections
 from typing import Dict
 
+from src.enums import GameResult
 from src.singleton import Singleton
 
 
@@ -16,10 +17,7 @@ class InMemoryUserGameInfoStore(metaclass=Singleton):
 
 
 class UserGameInfoStorage(abc.ABC):
-    def add_user_win(self, user: str, game: Dict):
-        raise NotImplementedError
-
-    def add_user_loss(self, user: str, game: Dict):
+    def add_user_game(self, user: str, game: Dict, game_result: GameResult):
         raise NotImplementedError
 
 
@@ -27,20 +25,12 @@ class InMemoryUserGameInfoStorage(UserGameInfoStorage):
     def __init__(self, store: InMemoryUserGameInfoStore):
         self.store = store
 
-    def add_user_win(self, user: str, game: Dict):
-        if user in self.store.get_user_info():
-            self.store.get_user_info()[user]["games"].append(game)
-        else:
-            self.store.get_user_info()[user]["games"] = [game]
-        self.store.get_user_info()[user]["wins"] += 1
+    def add_user_game(self, user: str, game: Dict, game_result: GameResult):
+        self.store.get_user_info()[user]["games"].append(game)
 
-        return self.store.get_user_info()[user]
-
-    def add_user_loss(self, user: str, game: Dict):
-        if user in self.store.get_user_info():
-            self.store.get_user_info()[user]["games"].append(game)
-        else:
-            self.store.get_user_info()[user]["games"].append(game)
-        self.store.get_user_info()[user]["losses"] += 1
+        if game_result == GameResult.WIN:
+            self.store.get_user_info()[user]["wins"] += 1
+        elif game_result == GameResult.LOSS:
+            self.store.get_user_info()[user]["losses"] += 1
 
         return self.store.get_user_info()[user]

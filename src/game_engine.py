@@ -99,13 +99,13 @@ class RPSSLGameEngine(GameEngine):
             raise APIError(ActiveGameNotFoundError())
 
         game["second_player"] = username
-        game["second_player_choice"] = player_choice_id
+        game["second_player_choice"] = choices[player_choice_id]
 
         winner = self._resolve_winner(
             game["first_player"],
             game["second_player"],
-            choices[game["first_player_choice"]],
-            choices[game["second_player_choice"]],
+            game["first_player_choice"],
+            game["second_player_choice"],
         )
         game["winner"] = winner
         logging.info(f"{winner} wins game: {game['game_id']}!")
@@ -129,7 +129,7 @@ class RPSSLGameEngine(GameEngine):
         first_player_choice: Choice,
         second_player_choice: Choice,
     ):
-        choice_beats = self.rules[first_player_choice]
+        choice_beats = self.rules[first_player_choice.value]
 
         if first_player_choice == second_player_choice:
             return GameResult.TIE
