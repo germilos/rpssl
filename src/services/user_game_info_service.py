@@ -36,3 +36,6 @@ class UserGameInfoService:
 
         if winner != COMPUTER:
             self.leaderboard_service.add_user_score(winner, winner_info["wins"])
+
+    def get_all_games(self) -> Dict:
+        return self.user_game_info_storage.get_all()

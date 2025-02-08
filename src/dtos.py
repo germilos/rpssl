@@ -77,6 +77,16 @@ class GameDto(BaseModel):
             winner=dict_values["winner"] if dict_values["winner"] is not None else None,
         )
 
+    def to_dict(self) -> Dict:
+        return {
+            "game_id": self.game_id,
+            "first_player": self.first_player,
+            "first_player_choice": self.first_player_choice,
+            "second_player": self.second_player,
+            "second_player_choice": self.second_player_choice,
+            "winner": self.winner,
+        }
+
 
 class SkinnyGameDto(BaseModel):
     game_id: uuid.UUID
@@ -99,3 +109,6 @@ class SkinnyGameDto(BaseModel):
 class UserScoreDto(BaseModel):
     user: str
     score: int
+
+    def to_dict(self) -> Dict:
+        return {"user": self.user, "score": self.score}

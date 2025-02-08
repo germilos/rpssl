@@ -12,6 +12,9 @@ class RecentGamesService(metaclass=Singleton):
     def add_game(self, game: Dict):
         self.recent_games_storage.add(game)
 
+    def add_games(self, game: List[Dict]):
+        self.recent_games_storage.add_all(game)
+
     def reset_recent_games(self):
         self.recent_games_storage.clear()
 

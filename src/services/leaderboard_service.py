@@ -20,6 +20,9 @@ class LeaderboardService(abc.ABC):
     def add_user_score(self, user: str, score: int):
         raise NotImplementedError
 
+    def get_leaderboard(self) -> List[UserScoreDto]:
+        raise NotImplementedError
+
     def get_top_players(self, n=settings.LEADERBOARD_PLAYERS) -> List[UserScoreDto]:
         raise NotImplementedError
 
@@ -30,6 +33,12 @@ class InMemoryLeaderboardService(LeaderboardService):
 
     def add_user_score(self, user: str, score: int):
         self.store.get_leaderboard()[user] = score
+
+    def get_leaderboard(self) -> List[UserScoreDto]:
+        return [
+            UserScoreDto(user=user, score=score)
+            for user, score in self.store.get_leaderboard().items()
+        ]
 
     """
     Top K users by score leaderboard algorithm.

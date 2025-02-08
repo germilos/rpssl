@@ -22,6 +22,9 @@ class RecentGamesStorage(abc.ABC):
     def add(self, game: Dict) -> Dict:
         raise NotImplementedError
 
+    def add_all(self, games: List[Dict]):
+        raise NotImplementedError
+
     def clear(self) -> Dict:
         raise NotImplementedError
 
@@ -37,6 +40,10 @@ class InMemoryRecentGamesStorage(RecentGamesStorage):
         if len(self.store.get_games()) == self.store.get_capacity():
             self.store.get_games().popleft()
         self.store.get_games().append(game)
+
+    def add_all(self, games: List[Dict]):
+        for game in games:
+            self.store.get_games().append(game)
 
     def clear(self):
         self.store.get_games().clear()
