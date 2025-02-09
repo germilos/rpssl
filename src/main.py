@@ -61,6 +61,8 @@ async def lifespan(app: FastAPI):
             for user, games in user_games.items():
                 user_games_store[user] = games
             logging.info("Finished loading RPSSL data!")
+    except EOFError as e:
+        logging.warning(f"App state files empty, initializing empty state. {e}")
     except Exception as e:
         logging.exception(e)
     yield
@@ -112,4 +114,4 @@ app.include_router(api.router, prefix="/api/v1")
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=9500, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=9501, reload=True)
