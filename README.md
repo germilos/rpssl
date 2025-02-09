@@ -164,8 +164,17 @@ Then run the containerized service:
 ```
 docker run -p 8000:8000 rpssl
 ```
-You will now be able to access the service on port 8000.
 
+(Optional) Create a new Volume
+```
+docker volume create <volume-name>
+```
+Then run the containerized service with the attached volume:
+```
+docker run -d -p 8000:8000 -v <volume-name>:/src/persistence_files rpssl
+```
+You will now be able to access the service on port 8000. If you opt for creating and attaching the Volume,
+game data will be persisted throughout container restarts.
 ## Running tests
 ```
 python3 -m pytest src/tests
