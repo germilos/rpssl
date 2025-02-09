@@ -34,4 +34,4 @@ ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONPATH "${PYTHONPATH}:/app/rpssl"
 
 EXPOSE 8000
-CMD ["/app/docker-entrypoint.sh"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

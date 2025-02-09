@@ -40,6 +40,7 @@ async def lifespan(app: FastAPI):
             open(f"{PERSISTENCE_FILES_PREFIX}/{LEADERBOARD_FILE}", "rb") as lb,
             open(f"{PERSISTENCE_FILES_PREFIX}/{USER_GAMES_FILE}", "rb") as ug,
         ):
+            logging.info("Loading RPSSL data from files...")
             recent_games_service = RecentGamesService(
                 InMemoryRecentGamesStorage(InMemoryRecentGamesStore())
             )
@@ -59,6 +60,7 @@ async def lifespan(app: FastAPI):
             user_games_store = user_games_service.get_all_games()
             for user, games in user_games.items():
                 user_games_store[user] = games
+            logging.info("Finished loading RPSSL data!")
     except Exception as e:
         logging.exception(e)
     yield
@@ -68,6 +70,7 @@ async def lifespan(app: FastAPI):
             open(f"{PERSISTENCE_FILES_PREFIX}/{LEADERBOARD_FILE}", "wb+") as lb,
             open(f"{PERSISTENCE_FILES_PREFIX}/{USER_GAMES_FILE}", "wb+") as ug,
         ):
+            logging.info("Dumping RPSSL data to files...")
             recent_games_service = RecentGamesService(
                 InMemoryRecentGamesStorage(InMemoryRecentGamesStore())
             )
@@ -90,6 +93,7 @@ async def lifespan(app: FastAPI):
             )
             user_games = dict(user_games_service.get_all_games())
             pickle.dump(user_games, ug)
+            logging.info("Finished dumping RPSSL data!")
     except Exception as e:
         logging.exception(e)
 
