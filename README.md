@@ -30,6 +30,14 @@ and an optional *username* parameter (**only games with provided *username* coun
   "username": username (Optional)
 }
 ```
+3. User receives the game results.
+```
+{
+    "results": "win",
+    "player": 5,
+    "computer": 1
+}
+```
 ### Multi-player
 User is also able to play games against other human opponents.
 1. Through the `POST /game` endpoint, the user creates a new game with his choice:
