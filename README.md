@@ -10,7 +10,7 @@ This section will describe the service layer.
 2. **Recent Games Service** - Service used to model a Scoreboard of 10 most recent Games
 3. **User Game Info Service** - for persisting Users and their played games and statistics
 4. **Leaderboard Service** - maintaining a Leaderboard of top 10 (configurable) players by wins
-## Use-cases
+## Use Cases
 There are 3 main use-cases:
 1. Single player game
 2. Multi-player game
@@ -19,7 +19,6 @@ There are 3 main use-cases:
 API can be accessed via the `/api/v1` prefix.
 
 Swagger documentation can be accessed via the usual `/docs` path.
-## Use Cases
 ### Single player
 As per project requirements, the user is able to play against a computer opponent:
 1. User retrieves available choices via `/choices` endpoint
