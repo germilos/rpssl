@@ -83,6 +83,7 @@ The endpoint returns the newly created game:
 }
 ```
 The system will then find a random available game and process the results.
+
 4. User receives the game results:
 ```
 {
